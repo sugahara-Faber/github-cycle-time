@@ -22,18 +22,20 @@
     "test": "tape *.test.js | tap-spec"
   },
   "dependencies": {
-    "@octokit/rest": "^15.9.5",
-    "abstract-blob-store": "^3.3.4",
-    "bluebird": "^3.5.1",
-    "defaults": "^1.0.3",
-    "json-parse-stream": "^0.0.2",
-    "mathjs": "^5.0.4",
-    "moment": "^2.22.2",
-    "moment-duration-format": "^2.2.2"
+    "@octokit/rest": "^19.0.7",
+    "abstract-blob-store": "^3.3.5",
+    "defaults": "^1.0.4",
+    "mathjs": "^11.8.0",
+    "moment": "^2.29.4",
+    "moment-duration-format": "^2.3.2"
   },
   "devDependencies": {
-    "fs-blob-store": "^5.2.1",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "eslint": "^8.37.0",
+    "fs-blob-store": "^6.0.0",
     "tap-spec": "^5.0.0",
-    "tape": "^4.9.1"
+    "tape": "^5.6.3",
+    "typescript": "^5.0.3"
   }
 }
