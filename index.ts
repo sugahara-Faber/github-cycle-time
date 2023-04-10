@@ -16,12 +16,12 @@ const getIssues = async (
   opts: {
     org: string;
     filter?:
-      | "all"
-      | "assigned"
-      | "created"
-      | "mentioned"
-      | "subscribed"
-      | "repos";
+    | "all"
+    | "assigned"
+    | "created"
+    | "mentioned"
+    | "subscribed"
+    | "repos";
     state?: "all" | "open" | "closed";
     direction?: "asc" | "desc";
     per_page: number;
@@ -62,7 +62,7 @@ export class CycleTime {
   Client: Octokit;
   options: Options;
 
-  constructor(options = {}) {
+  constructor(options: Partial<Options> = {}) {
     this.options = defaults(options, {
       baseUrl: "https://api.github.com",
       cache: new store(),

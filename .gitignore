@@ -550,6 +550,8 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+cache
+dist
 
 # End of https://www.gitignore.io/api/go,osx,vim,node,ruby,linux,emacs,rails,python,windows,eclipse,textmate,sublimetext,visualstudiocode
 !.gitkeep # must be last
