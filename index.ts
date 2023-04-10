@@ -46,7 +46,6 @@ type Ticket = {
   closed?: string;
 
   reaction_time?: number;
-  coding_time?: number;
   waiting_review?: number;
   reviewing_time?: number;
   waiting_release?: number;
@@ -130,7 +129,7 @@ export class CycleTime {
     const endTime = moment.default(end);
 
     if (startTime.isValid() && endTime.isValid()) {
-      return moment.duration(endTime.diff(startTime)).as("seconds");
+      return moment.duration(endTime.diff(startTime)).as("second");
     } else {
       return 0;
     }
@@ -138,7 +137,6 @@ export class CycleTime {
 
   private _times(ticket: Ticket) {
     ticket.reaction_time = this._duration(ticket.opened, ticket.assigned);
-    ticket.coding_time = this._duration(ticket.opened, ticket.review_requested);
     ticket.waiting_review = this._duration(
       ticket.review_requested,
       ticket.first_review
@@ -156,7 +154,6 @@ export class CycleTime {
     data: Ticket[],
     type:
       | "reaction_time"
-      | "coding_time"
       | "waiting_review"
       | "reviewing_time"
       | "waiting_release"
@@ -198,29 +195,23 @@ export class CycleTime {
       owner: this.options.org,
       repo: this.options.repo,
       state: "closed",
-      per_page: 10,
+      per_page: 50,
       page: 1,
-    });
-  }
-
-  private _humanize(duration_in_seconds: moment.DurationInputArg1) {
-    return moment.duration(duration_in_seconds, "seconds").format({
-      template: "w[W] d[D] h[H] m[M]",
-      precision: 1,
     });
   }
 
   async tickets() {
     const pulls = await this._fetch();
-    const tickets_1 = this._format(pulls);
+    const tickets_1 = this._format(
+      pulls.filter((p) => !p.title.startsWith("Release"))
+    );
     const tickets_3 = await this._enhance(tickets_1);
-    return this._calculate(tickets_3);
+    return this._calculate(tickets_3.filter((p) => p.approved));
   }
 
   async metrics() {
     const data = await this.tickets();
     const [rt_mean, rt_median] = this._aggregate(data, "reaction_time");
-    const [ct_mean, ct_median] = this._aggregate(data, "coding_time");
     const [wr_mean, wr_median] = this._aggregate(data, "waiting_review");
     const [rv_mean, rv_median] = this._aggregate(data, "reviewing_time");
     const [wl_mean, wl_median] = this._aggregate(data, "waiting_release");
@@ -230,8 +221,6 @@ export class CycleTime {
       n: data.length,
       reaction_time_mean: rt_mean,
       reaction_time_median: rt_median,
-      coding_time_mean: ct_mean,
-      coding_time_median: ct_median,
       waiting_review_mean: wr_mean,
       waiting_review_median: wr_median,
       reviewing_time_mean: rv_mean,
