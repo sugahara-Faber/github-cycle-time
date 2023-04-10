@@ -1,5 +1,5 @@
 import math from "mathjs";
-import moment from "moment";
+import * as moment from "moment";
 import defaults from "defaults";
 import store from "abstract-blob-store";
 import momentDurationSetup from "moment-duration-format";
@@ -149,11 +149,11 @@ export class CycleTime {
   }
 
   private _duration(start: moment.MomentInput, end: moment.MomentInput) {
-    start = moment(start);
-    end = moment(end);
+    const startTime = moment.default(start);
+    const endTime = moment.default(end);
 
-    if (start.isValid() && end.isValid()) {
-      return moment.duration(end.diff(start)).as("seconds");
+    if (startTime.isValid() && endTime.isValid()) {
+      return moment.duration(endTime.diff(startTime)).as("seconds");
     } else {
       return 0;
     }

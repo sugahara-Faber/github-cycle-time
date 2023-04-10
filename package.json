@@ -30,6 +30,9 @@
     "moment-duration-format": "^2.3.2"
   },
   "devDependencies": {
+    "@types/defaults": "^1.0.3",
+    "@types/moment-duration-format": "^2.2.3",
+    "@types/node": "^18.15.11",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",
     "eslint": "^8.37.0",

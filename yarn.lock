@@ -182,10 +182,27 @@
   dependencies:
     "@octokit/openapi-types" "^16.0.0"
 
+"@types/defaults@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/@types/defaults/-/defaults-1.0.3.tgz"
+  integrity sha512-l/vg53WQapGTmB8ERkYx8/80/u2YAhFS6OroU1d3jtPpSW9vHck5sXMWY2JCPhlgZWq3PfDbu1Yna+EKsJHPUQ==
+
 "@types/json-schema@^7.0.9":
   version "7.0.11"
   resolved "https://registry.npmjs.org/@types/json-schema/-/json-schema-7.0.11.tgz"
   integrity sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==
+
+"@types/moment-duration-format@^2.2.3":
+  version "2.2.3"
+  resolved "https://registry.npmjs.org/@types/moment-duration-format/-/moment-duration-format-2.2.3.tgz"
+  integrity sha512-NQrnFOX1PTvHY8OH1aLoZntAkc2ad/1Cdl31UWIEaqBpDJ/m5SwfFBtFaX7TBLavASeLxG8DL7rm3NHKCLduaA==
+  dependencies:
+    moment ">=2.14.0"
+
+"@types/node@^18.15.11":
+  version "18.15.11"
+  resolved "https://registry.npmjs.org/@types/node/-/node-18.15.11.tgz"
+  integrity sha512-E5Kwq2n4SbMzQOn6wnmBjuK9ouqlURrcZDVfbo9ftDDTFt3nk7ZKK4GMOzoYgnpQJKcxwQw+lGaBvvlMo0qN/Q==
 
 "@types/semver@^7.3.12":
   version "7.3.13"
@@ -1394,7 +1411,7 @@ moment-duration-format@^2.3.2:
   resolved "https://registry.npmjs.org/moment-duration-format/-/moment-duration-format-2.3.2.tgz"
   integrity sha512-cBMXjSW+fjOb4tyaVHuaVE/A5TqkukDWiOfxxAjY+PEqmmBQlLwn+8OzwPiG3brouXKY5Un4pBjAeB6UToXHaQ==
 
-moment@^2.29.4:
+moment@^2.29.4, moment@>=2.14.0:
   version "2.29.4"
   resolved "https://registry.npmjs.org/moment/-/moment-2.29.4.tgz"
   integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
