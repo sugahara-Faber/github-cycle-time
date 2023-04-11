@@ -34,9 +34,13 @@ type Options = {
   token: string;
 };
 
+type Duration = {
+  seconds: number;
+  human: string;
+};
+
 type Ticket = {
   id: number;
-  org: string;
   opened: string;
   reopened?: string;
   assigned?: string;
@@ -45,11 +49,11 @@ type Ticket = {
   approved?: string;
   closed?: string;
 
-  reaction_time?: number;
-  waiting_review?: number;
-  reviewing_time?: number;
-  waiting_release?: number;
-  lead_time?: number;
+  reaction_time?: Duration;
+  waiting_review?: Duration;
+  reviewing_time?: Duration;
+  waiting_release?: Duration;
+  lead_time?: Duration;
 };
 
 type Timeline = Awaited<
@@ -90,8 +94,7 @@ export class CycleTime {
     const tickets = data.map((ticket) => {
       return {
         id: ticket.number,
-        org: this.options.org,
-        repos: ticket.head.repo.name,
+        title: ticket.title,
         opened: ticket.created_at,
       };
     });
@@ -124,14 +127,24 @@ export class CycleTime {
     return ticket;
   }
 
-  private _duration(start: moment.MomentInput, end: moment.MomentInput) {
+  private _duration(
+    start: moment.MomentInput,
+    end: moment.MomentInput
+  ): Duration {
     const startTime = moment.default(start);
     const endTime = moment.default(end);
 
     if (startTime.isValid() && endTime.isValid()) {
-      return moment.duration(endTime.diff(startTime)).as("second");
+      const duration = moment.duration(endTime.diff(startTime));
+      return {
+        seconds: duration.as("second"),
+        human: duration.format("DD[d] hh[h] mm[m]"),
+      };
     } else {
-      return 0;
+      return {
+        seconds: 0,
+        human: "",
+      };
     }
   }
 
@@ -159,7 +172,7 @@ export class CycleTime {
       | "waiting_release"
       | "lead_time"
   ) {
-    const agg = data.map((v) => v[type] ?? 0);
+    const agg = data.map((v) => v[type]?.seconds ?? 0);
     return [mean(agg.slice(0)), median(agg.slice(0))];
   }
 
@@ -174,7 +187,7 @@ export class CycleTime {
       this.Client.issues.listEventsForTimeline,
       {
         issue_number: ticket.id,
-        owner: ticket.org,
+        owner: this.options.org,
         repo: this.options.repo,
       }
     );
@@ -195,7 +208,9 @@ export class CycleTime {
       owner: this.options.org,
       repo: this.options.repo,
       state: "closed",
-      per_page: 50,
+      sort: "updated",
+      direction: "desc",
+      per_page: 100,
       page: 1,
     });
   }
@@ -206,7 +221,12 @@ export class CycleTime {
       pulls.filter((p) => !p.title.startsWith("Release"))
     );
     const tickets_3 = await this._enhance(tickets_1);
-    return this._calculate(tickets_3.filter((p) => p.approved));
+    return this._calculate(
+      tickets_3.filter(
+        (p) =>
+          p.approved && moment.default(p.closed).diff(moment.now()) > -674800000
+      )
+    );
   }
 
   async metrics() {
