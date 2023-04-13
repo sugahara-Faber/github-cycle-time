@@ -30,7 +30,7 @@ jobs:
 
       - run: curl -XPOST -H"Content-Type:application/json" -d"$(node dist/main.js)" "$WEBHOOK_URL"
         env:
-          GITHUB_ORG: ${{ secrets.GITHUB_ORG }}
-          GITHUB_REPO: ${{ secrets.GITHUB_REPO }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ORG: ${{ secrets.GH_ORG }}
+          GITHUB_REPO: ${{ secrets.GH_REPO }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
