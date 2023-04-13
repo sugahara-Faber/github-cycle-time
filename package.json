@@ -27,7 +27,8 @@
     "dotenv": "^16.0.3",
     "mathjs": "^11.8.0",
     "moment": "^2.29.4",
-    "moment-duration-format": "^2.3.2"
+    "moment-duration-format": "^2.3.2",
+    "table": "^6.8.1"
   },
   "devDependencies": {
     "@types/defaults": "^1.0.3",

@@ -1,4 +1,4 @@
-import { mean, median } from "mathjs";
+import { max, mean, median } from "mathjs";
 import * as moment from "moment";
 import defaults from "defaults";
 import momentDurationSetup from "moment-duration-format";
@@ -174,6 +174,7 @@ export class CycleTime {
     return {
       mean: this.humanize(mean(agg.slice(0)) * 1000),
       median: this.humanize(median(agg.slice(0)) * 1000),
+      max: this.humanize(max(agg.slice(0)) * 1000),
     };
   }
 

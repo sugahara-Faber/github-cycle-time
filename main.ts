@@ -1,5 +1,7 @@
 import { config } from "dotenv";
 import { CycleTime } from ".";
+import { table } from "table";
+import moment from "moment";
 
 config();
 
@@ -11,5 +13,32 @@ const ct = new CycleTime({
 
 (async () => {
   const tickets = await ct.tickets();
-  console.log(ct.metrics(tickets));
+  const metrics = ct.metrics(tickets);
+
+  const data: (string | number)[][] = [
+    [`N = ${metrics.n}`, "mean", "median", "max"],
+  ];
+  for (const [k, v] of Object.entries(metrics)) {
+    if (typeof v === "number") continue;
+    data.push([
+      k.replace(/_/g, " ").replace(/^./, (s) => s.toUpperCase()),
+      v.mean.human,
+      v.median.human,
+      v.max.human,
+    ]);
+  }
+
+  const today = moment().format("YYYY-MM-DD");
+
+  console.log(
+    table(data, {
+      header: { content: today },
+      drawHorizontalLine: (i, r) => i <= 2 || i === r,
+      columns: {
+        1: { alignment: "right" },
+        2: { alignment: "right" },
+        3: { alignment: "right" },
+      },
+    })
+  );
 })();
