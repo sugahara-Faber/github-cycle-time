@@ -4,7 +4,9 @@ const service = new CycleTime({
   token: process.env.GITHUB_TOKEN,
 });
 
-service
-  .metrics()
-  .then((metrics) => console.log("metrics:\n", metrics))
-  .catch((error) => console.error(error));
+(async () => {
+  const data = await service.tickets();
+  const metrics = service.metrics(data);
+
+  console.log(metrics);
+})();

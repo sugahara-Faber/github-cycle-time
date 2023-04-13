@@ -10,5 +10,6 @@ const ct = new CycleTime({
 });
 
 (async () => {
-  console.log(await ct.tickets());
+  const tickets = await ct.tickets();
+  console.log(ct.metrics(tickets));
 })();

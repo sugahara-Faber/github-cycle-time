@@ -90,7 +90,7 @@ export class CycleTime {
     });
   }
 
-  private _format(data: Issue): Ticket[] {
+  private format(data: Issue): Ticket[] {
     const tickets = data.map((ticket) => {
       return {
         id: ticket.number,
@@ -101,7 +101,7 @@ export class CycleTime {
     return tickets;
   }
 
-  private _process(ticket: Ticket, timeline: Timeline) {
+  private process(ticket: Ticket, timeline: Timeline) {
     timeline.forEach((tl) => {
       switch (tl.event) {
         case "closed":
@@ -127,7 +127,15 @@ export class CycleTime {
     return ticket;
   }
 
-  private _duration(
+  private humanize(diff: moment.DurationInputArg1) {
+    const duration = moment.duration(diff);
+    return {
+      seconds: duration.as("second"),
+      human: duration.format("DD[d] hh[h] mm[m]"),
+    };
+  }
+
+  private duration(
     start: moment.MomentInput,
     end: moment.MomentInput
   ): Duration {
@@ -135,35 +143,25 @@ export class CycleTime {
     const endTime = moment.default(end);
 
     if (startTime.isValid() && endTime.isValid()) {
-      const duration = moment.duration(endTime.diff(startTime));
-      return {
-        seconds: duration.as("second"),
-        human: duration.format("DD[d] hh[h] mm[m]"),
-      };
+      return this.humanize(endTime.diff(startTime));
     } else {
-      return {
-        seconds: 0,
-        human: "",
-      };
+      return this.humanize(0);
     }
   }
 
-  private _times(ticket: Ticket) {
-    ticket.reaction_time = this._duration(ticket.opened, ticket.assigned);
-    ticket.waiting_review = this._duration(
+  private times(ticket: Ticket) {
+    ticket.reaction_time = this.duration(ticket.opened, ticket.assigned);
+    ticket.waiting_review = this.duration(
       ticket.review_requested,
       ticket.first_review
     );
-    ticket.reviewing_time = this._duration(
-      ticket.first_review,
-      ticket.approved
-    );
-    ticket.waiting_release = this._duration(ticket.approved, ticket.closed);
-    ticket.lead_time = this._duration(ticket.opened, ticket.closed);
+    ticket.reviewing_time = this.duration(ticket.first_review, ticket.approved);
+    ticket.waiting_release = this.duration(ticket.approved, ticket.closed);
+    ticket.lead_time = this.duration(ticket.opened, ticket.closed);
     return ticket;
   }
 
-  private _aggregate(
+  private aggregate(
     data: Ticket[],
     type:
       | "reaction_time"
@@ -173,12 +171,15 @@ export class CycleTime {
       | "lead_time"
   ) {
     const agg = data.map((v) => v[type]?.seconds ?? 0);
-    return [mean(agg.slice(0)), median(agg.slice(0))];
+    return {
+      mean: this.humanize(mean(agg.slice(0)) * 1000),
+      median: this.humanize(median(agg.slice(0)) * 1000),
+    };
   }
 
   private _calculate(tickets: Ticket[]) {
     return tickets.map((ticket) => {
-      return this._times(ticket);
+      return this.times(ticket);
     });
   }
 
@@ -191,7 +192,7 @@ export class CycleTime {
         repo: this.options.repo,
       }
     );
-    return this._process(ticket, data);
+    return this.process(ticket, data);
   }
 
   private async _enhance(tickets: Ticket[]) {
@@ -217,7 +218,7 @@ export class CycleTime {
 
   async tickets() {
     const pulls = await this._fetch();
-    const tickets_1 = this._format(
+    const tickets_1 = this.format(
       pulls.filter((p) => !p.title.startsWith("Release"))
     );
     const tickets_3 = await this._enhance(tickets_1);
@@ -229,26 +230,14 @@ export class CycleTime {
     );
   }
 
-  async metrics() {
-    const data = await this.tickets();
-    const [rt_mean, rt_median] = this._aggregate(data, "reaction_time");
-    const [wr_mean, wr_median] = this._aggregate(data, "waiting_review");
-    const [rv_mean, rv_median] = this._aggregate(data, "reviewing_time");
-    const [wl_mean, wl_median] = this._aggregate(data, "waiting_release");
-    const [lt_mean, lt_median] = this._aggregate(data, "lead_time");
-
+  metrics(tickets: Ticket[]) {
     return {
-      n: data.length,
-      reaction_time_mean: rt_mean,
-      reaction_time_median: rt_median,
-      waiting_review_mean: wr_mean,
-      waiting_review_median: wr_median,
-      reviewing_time_mean: rv_mean,
-      reviewing_time_median: rv_median,
-      waiting_release_mean: wl_mean,
-      waiting_release_median: wl_median,
-      lead_time_mean: lt_mean,
-      lead_time_median: lt_median,
+      n: tickets.length,
+      reaction_time: this.aggregate(tickets, "reaction_time"),
+      waiting_review: this.aggregate(tickets, "waiting_review"),
+      reviewing_time: this.aggregate(tickets, "reviewing_time"),
+      waiting_release: this.aggregate(tickets, "waiting_release"),
+      lead_time: this.aggregate(tickets, "lead_time"),
     };
   }
 }
