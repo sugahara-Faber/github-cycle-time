@@ -30,7 +30,8 @@ const ct = new CycleTime({
 
   const today = moment().format("YYYY-MM-DD");
 
-  console.log(
+  const text =
+    "```\n" +
     table(data, {
       header: { content: today },
       drawHorizontalLine: (i, r) => i <= 2 || i === r,
@@ -39,6 +40,8 @@ const ct = new CycleTime({
         2: { alignment: "right" },
         3: { alignment: "right" },
       },
-    })
-  );
+    }) +
+    "```";
+
+  console.log(JSON.stringify({ text }));
 })();

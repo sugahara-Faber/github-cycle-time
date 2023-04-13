@@ -1,0 +1,36 @@
+name: Post Cycle Time Report
+
+on:
+  schedule: # 9:07 AM JST every working day
+    - cron: "7 0 * * MON-FRI"
+  workflow_dispatch:
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - uses: actions/cache@v3
+        id: node_modules_cache_id
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+
+      - run: npm i
+
+      - run: npx tsc
+
+      - run: curl -XPOST -H"Content-Type:application/json" -d"$(node dist/main.js)" "$WEBHOOK_URL"
+        env:
+          GITHUB_ORG: ${{ secrets.GITHUB_ORG }}
+          GITHUB_REPO: ${{ secrets.GITHUB_REPO }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
